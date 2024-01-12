@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Convertidor de Billetes y Monedas</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    .cambio-container {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .imagen-cambio {
+      margin: 10px;
+      max-width: 250px;
+      ma
+    }
+  </style>
+</head>
+<body>
+
+<div class="container mt-5">
+  <div class="form-group">
+    <label for="cantidadInput">Cantidad:</label>
+    <input type="text" class="form-control" id="cantidadInput" placeholder="Ingrese la cantidad">
+  </div>
+  <button type="button" class="btn btn-primary" onclick="convertirCambio()">Convertir</button>
+
+  <div class="mt-4 cambio-container" id="cambioContainer">
+    <!-- Aquí se mostrarán las imágenes -->
+  </div>
+
+  <div class="mt-4" id="respuestaTexto">
+    <!-- Aquí se mostrará la respuesta textual -->
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+  function convertirCambio() {
+    const cantidadIngresada = parseFloat(document.getElementById('cantidadInput').value);
+
+    if (isNaN(cantidadIngresada)) {
+      alert('Por favor, ingrese una cantidad válida.');
+      return;
+    }
+
+    const resultadoCambio = cambioOptimo(cantidadIngresada);
+    mostrarCambio(resultadoCambio);
+  }
+
+  function mostrarCambio(cambio) {
+    const cambioContainer = $('#cambioContainer');
+    const respuestaTexto = $('#respuestaTexto');
+
+    cambioContainer.empty();
+    respuestaTexto.empty();
+
+    for (const denominacion in cambio) {
+      const cantidad = cambio[denominacion];
+
+      
+      if(denominacion>1){
+        respuestaTexto.append(`${cantidad} de ${denominacion} soles, `);
+      } else if (denominacion==1){
+        respuestaTexto.append(`${cantidad} de ${denominacion} sol, `);
+      } else{
+        const temp = denominacion*100;
+        respuestaTexto.append(`${cantidad} de ${temp} centimos, `);
+      }
+      // Mostrar la respuesta textual
+      // respuestaTexto.append(`${cantidad} de ${denominacion}     -     `);
+
+      // Mostrar imágenes
+      for (let i = 0; i < cantidad; i++) {
+        const imagen = $('<img>');
+        imagen.attr('src', `img/${denominacion}.jpg`); // Asegúrate de que las imágenes tengan nombres adecuados
+        imagen.attr('alt', denominacion);
+        imagen.addClass('imagen-cambio');
+        cambioContainer.append(imagen);
+      }
+    }
+
+    // Eliminar la coma final de la respuesta textual
+    respuestaTexto.text(respuestaTexto.text().slice(0, -2));
+  }
+  
+</script>
+
+<script>
+  function cambioOptimo(cantidad) {
+    const denominaciones = [200, 100, 50, 20, 10, 5, 2, 1, 0.5, 0.2, 0.1];
+    const resultado = {};
+
+    denominaciones.forEach(denominacion => {
+      const cantidadDenominacion = Math.floor(cantidad / denominacion);
+      if (cantidadDenominacion > 0) {
+        resultado[denominacion] = cantidadDenominacion;
+        cantidad -= cantidadDenominacion * denominacion;
+      }
+    });
+
+    return resultado;
+  }
+
+  
+</script>
+
+</body>
+</html>
+
+
+
